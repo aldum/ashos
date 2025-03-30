@@ -51,7 +51,7 @@ def aur_install(snap, skip_prep=False, skip_post=False):
 
 #   Set up AUR in snapshot
 def aur_install_helper(snap):
-    required = ["sudo", "git", "base-devel"]
+    required = ["git", "base-devel"]
     excode = os.system(
         f"chroot /.snapshots/rootfs/snapshot-chr{snap} pacman -Sy --needed --noconfirm {' '.join(required)}"
     )

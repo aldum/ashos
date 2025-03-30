@@ -7,10 +7,12 @@ import src.installer_core as core
 from setup import args, distro
 
 #   1. Define variables
-packages = f"base linux{KERNEL} btrfs-progs sudo grub dhcpcd networkmanager nano \
-            linux-firmware" # os-prober bash tmux arch-install-scripts
 is_format_btrfs = True  # REVIEW temporary
 KERNEL = ""  # options: https://wiki.archlinux.org/title/kernel e.g. "-xanmod"
+INIT = "dinit"
+packages = f"base linux{KERNEL} btrfs-progs sudo grub nano less \
+            dhcpcd networkmanager-{INIT} \
+            linux-firmware"  # os-prober bash tmux arch-install-scripts
 
 is_ash_bundle = core.is_ash_bundle
 is_luks = core.is_luks
@@ -20,11 +22,12 @@ hostname = core.hostname
 tz = core.tz
 
 if not is_ash_bundle:
-    packages += " python3 python-anytree"
+    # Arch support is required for anytree
+    packages += " python3 artix-archlinux-support python-anytree"
 if is_efi:
     packages += " efibootmgr"
 if is_luks:
-    packages += " cryptsetup"  # REVIEW
+    packages += f" cryptsetup-{INIT}"  # REVIEW
 super_group = "wheel"
 v = ""  # GRUB version number in /boot/grubN
 
@@ -60,6 +63,10 @@ def main():
     os.system(
         "sed -i 's|[#?]DBPath.*$|DBPath       = /usr/share/ash/db/|g' /etc/pacman.conf"
     )
+    with open("/etc/pacman.conf", "a") as pacman_conf:
+        pacman_conf.writelines(
+            ["[extra]\n", "Include = /etc/pacman.d/mirrorlist-arch\n"]
+        )
 
     #   4. Update hostname, hosts, locales and timezone, hosts
     os.system(f"echo {hostname} > /etc/hostname")
@@ -77,8 +84,7 @@ def main():
     core.post_bootstrap(super_group)
 
     #   5. Services (init, network, etc.)
-    # os.system("/usr/lib/systemd/system-generators/systemd-fstab-generator /run/systemd/generator '' ''") # REVIEW recommended as fstab changed. "systemctl daemon-reload"
-    os.system("systemctl enable NetworkManager")
+    os.system("dinitctl enable NetworkManager")
 
     #   6. Boot and EFI
     initram_update()
@@ -125,7 +131,7 @@ def initram_update():  # REVIEW removed "{SUDO}" from all lines below
 
 
 def strap():
-    sp.check_call(f"pacstrap /mnt --needed {packages}", shell=True)
+    sp.check_call(f"basestrap /mnt --needed {packages}", shell=True)
 
 
 main()

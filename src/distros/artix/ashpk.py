@@ -15,7 +15,7 @@ try:
         post_transactions,
         snapshot_config_edit,
         sync_time,
-        rmrf_star,
+        # rmrf_star,
         yes_no,
         DEBUG,
     )
@@ -193,11 +193,12 @@ def fix_package_db(snap=0):
         os.system("pacman -Syy")
         os.system("gpg --refresh-keys")
         os.system("killall gpg-agent")
-        os.system("pacman-key --init")
-        os.system("pacman-key --populate archlinux")
         os.system(
-            "pacman -Syvv --noconfirm archlinux-keyring"
+            "pacman -Syvv --noconfirm artix-keyring archlinux-keyring"
         )  ### REVIEW NEEDED? (maybe)
+        os.system("pacman-key --init")
+        os.system("pacman-key --populate artix")
+        os.system("pacman-key --populate archlinux")
         # chroot out if needed
         if run_chroot:
             chroot_out(rr)
@@ -213,19 +214,22 @@ def fix_package_db(snap=0):
 #   Delete init system files (Systemd, OpenRC, etc.)
 def init_system_clean(snap, FROM):
     if FROM == "prepare":
-        rmrf_star(f"/.snapshots/rootfs/snapshot-chr{snap}/var/lib/systemd")
+        # rmrf_star(f"/.snapshots/rootfs/snapshot-chr{snap}/var/lib/systemd")
+        pass  # TODO
     elif FROM == "deploy":
-        rmrf_star("/var/lib/systemd")
-        rmrf_star(f"/.snapshots/rootfs/snapshot-{snap}/var/lib/systemd")
+        # rmrf_star("/var/lib/systemd")
+        # rmrf_star(f"/.snapshots/rootfs/snapshot-{snap}/var/lib/systemd")
+        pass  # TODO
 
 
 #   Copy init system files (Systemd, OpenRC, etc.) to shared
 def init_system_copy(snap, FROM):
     if FROM == "post_transactions":
-        rmrf_star("/var/lib/systemd")
-        os.system(
-            f"cp -r --reflink=auto /.snapshots/rootfs/snapshot-{snap}/var/lib/systemd/. /var/lib/systemd/{DEBUG}"
-        )
+        # rmrf_star("/var/lib/systemd")
+        # os.system(
+        #     f"cp -r --reflink=auto /.snapshots/rootfs/snapshot-{snap}/var/lib/systemd/. /var/lib/systemd/{DEBUG}"
+        # )
+        pass  # TODO
 
 
 #   Install atomic-operation

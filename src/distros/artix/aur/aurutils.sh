@@ -13,7 +13,7 @@ sudo pacman -Scc
 mount / -o remount,size=4G /run/archiso/cowspace
 mount /run/user/0 -o remount,size=2G /run/user/0
 
-id -u aur &> /dev/null || useradd -m -s /bin/bash aur
+id -u aur > /dev/null 2>&1 || useradd -m -s /bin/bash aur
 echo 'aur ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 
 #runuser aur << EOF # <--------- WORKS

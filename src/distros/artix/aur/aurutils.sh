@@ -18,7 +18,7 @@ echo 'aur ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 
 #runuser aur << EOF # <--------- WORKS
 
-runuser aur -c 'git clone https://github.com/AladW/aurutils /tmp/aurutils_temp'
+runuser aur -c 'git clone https://github.com/aurutils/aurutils /tmp/aurutils_temp'
 runuser aur -c '(cd /tmp/aurutils_temp && sudo make install)' # Do not change pwd
 runuser aur -c 'sudo cp -a ./src/distros/arch/aur/aurutils.conf /etc/pacman.d/aur'
 runuser aur -c 'sudo install -d /var/cache/pacman/aur -o aur'
@@ -32,4 +32,3 @@ sudo pacman -Sy
 runuser aur -c 'aur sync linux-xanmod --no-view --no-confirm --makepkg-args=--skipinteg'
 #aur sync linux${KERNEL} --no-view --no-confirm
 #EOF
-
